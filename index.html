@@ -200,58 +200,60 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       async function submitForm(event) {
-        event.preventDefault();
+         event.preventDefault();
 
-        showLoading();
-        const loading = document.getElementById("loading");
-        loading.style.display = "block";
+    // Disable all input fields to prevent further interaction
+    const inputFields = document.querySelectorAll('input, select, textarea');
+    inputFields.forEach(function(field) {
+        field.disabled = true;
+    });
 
-        const form = document.getElementById("registrationForm");
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+    // Disable submit button to prevent multiple submissions
+    const submitButton = document.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
 
-        const params = new URLSearchParams();
-        formData.forEach((value, key) => {
-          params.append(key, value);
-        });
+    showLoading();
 
-        try {
-          const response = await fetch(
-            "https://script.google.com/macros/s/AKfycbxiFPQvO-pOPq6U6VrSwiG9Cbk5e7ZG8my1oxRzgcNcSoatHVtiN09XTXzpwYBlcqFQUA/exec",
-            {
-              method: "POST",
-              body: params,
-            }
-          );
-
-          if (response.ok) {
-            hideLoading();
+    const formData = new FormData(document.getElementById("registrationForm"));
+    fetch("https://script.google.com/macros/s/AKfycbxiFPQvO-pOPq6U6VrSwiG9Cbk5e7ZG8my1oxRzgcNcSoatHVtiN09XTXzpwYBlcqFQUA/exec", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        hideLoading();
+        if (response.ok) {
             Swal.fire({
-              icon: "success",
-              title: "Berhasil",
-              text: "Form berhasil dikirim",
-              willClose: () => {
-                location.reload();
-              },
+                icon: "success",
+                title: "Berhasil",
+                text: "Form berhasil dikirim",
+                willClose: () => {
+                    location.reload();
+                }
             });
-            loading.style.display = "none";
-          } else {
-            hideLoading();
+        } else {
             Swal.fire({
-              icon: "error",
-              title: "Gagal",
-              text: "Terjadi kesalahan. Coba lagi.",
+                icon: "error",
+                title: "Gagal",
+                text: "Terjadi kesalahan. Coba lagi."
             });
-            loading.style.display = "none";
-          }
-        } catch (error) {
-          Swal.fire({
+            inputFields.forEach(function(field) {
+                field.disabled = false;
+            });
+            submitButton.disabled = false;
+        }
+    })
+    .catch(error => {
+        document.body.removeChild(loadingDiv);
+        Swal.fire({
             icon: "error",
             title: "Gagal",
-            text: "Terjadi kesalahan jaringan. Coba lagi.",
-          });
-          loading.style.display = "none";
-        }
+            text: "Terjadi kesalahan. Coba lagi."
+        });
+        inputFields.forEach(function(field) {
+            field.disabled = false;
+        });
+        submitButton.disabled = false;
+    });
       }
     </script>
   </html>
