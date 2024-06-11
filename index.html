@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Form Pendaftaran</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <style>
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+    </style>
+      <script>
+        function updateParticipants() {
+          const participantsContainer = document.getElementById(
+            "participantsContainer"
+          );
+          participantsContainer.innerHTML = "";
+          const numParticipants =
+            document.getElementById("numParticipants").value;
+          for (let i = 0; i < numParticipants; i++) {
+            const participantDiv = document.createElement("div");
+            participantDiv.className = "mb-4 p-4 border rounded";
+            if (i === 0) {
+              participantDiv.innerHTML = `
+                        <h3 class="font-bold mb-2">Peserta ${i + 1}</h3>
+                        <label class="block mb-2">Ukuran Kaos:</label>
+                        <select name="shirtSize${i}" class="block w-full p-2 border rounded mb-2" required>
+                            <option value="" disabled selected>Pilih ukuran kaos</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                        <label class="block mb-2">Ukuran Jaket:</label>
+                        <select name="jacketSize" class="block w-full p-2 border rounded" required>
+                            <option value="" disabled selected>Pilih ukuran jaket</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    `;
+            } else {
+              participantDiv.innerHTML = `
+                        <h3 class="font-bold mb-2">Peserta ${i + 1}</h3>
+                        <label class="block mb-2">Ukuran Kaos:</label>
+                        <select name="shirtSize${i}" class="block w-full p-2 border rounded mb-2" required>
+                            <option value="" disabled selected>Pilih ukuran kaos</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    `;
+            }
+            participantsContainer.appendChild(participantDiv);
+          }
+          toggleParticipantForms(true);
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+      </script>
+    </head>
+
+    <body class="bg-gray-100 p-6">
+      <div class="max-w-lg mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-6 text-center">Motivaday 2024</h1>
+        <form id="registrationForm">
+          <div class="mb-4">
+            <label for="name" class="block mb-2">Nama:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              class="block w-full p-2 border rounded"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block mb-2">Ikut Motivaday:</label>
+            <div class="flex items-center mb-2">
+              <input
+                type="radio"
+                id="motivadayYes"
+                name="motivaday"
+                value="yes"
+                class="mr-2"
+                onchange="toggleParticipantForms(true)"
+              />
+              <label for="motivadayYes" class="mr-4">Ya</label>
+              <input
+                type="radio"
+                id="motivadayNo"
+                name="motivaday"
+                value="no"
+                class="mr-2"
+                onchange="toggleParticipantForms(false)"
+              />
+              <label for="motivadayNo">Tidak</label>
+            </div>
+            <span id="motivadayError" class="text-red-500 hidden"
+              >Pilih salah satu pilihan</span
+            >
+          </div>
+          <div class="mb-4">
+            <label for="numParticipants" class="block mb-2"
+              >Jumlah yang ikut:</label
+            >
+            <input
+              type="number"
+              id="numParticipants"
+              name="numParticipants"
+              class="block w-full p-2 border rounded"
+              min="1"
+              oninput="updateParticipants()"
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block mb-2" id="labelbus">Ikut bus:</label>
+            <div class="flex items-center">
+              <input
+                type="radio"
+                id="busYes"
+                name="bus"
+                value="yes"
+                class="mr-2"
+              />
+              <label for="busYes" class="mr-4">Ya</label>
+              <input
+                type="radio"
+                id="busNo"
+                name="bus"
+                value="no"
+                class="mr-2"
+              />
+              <label for="busNo">Tidak</label>
+            </div>
+          </div>
+          <div id="participantsContainer" class="mb-4"></div>
+          <button type="submit" class="bg-blue-500 text-white p-2 rounded">
+            Submit
+          </button>
+        </form>
+      </div>\
+      <div id="loading" class="loading">
+        <div class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    </body>
+
+    <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('registrationForm').addEventListener('submit', submitForm);
+        });
+    </script>
+
+    <script>
+      function toggleParticipantForms(val) {
+        const formElements =
+          document.getElementById("registrationForm").elements;
+        const displayStyle = val ? "block" : "none";
+        const requiredAction = val ? "setAttribute" : "removeAttribute";
+
+        for (let i = 0; i < formElements.length; i++) {
+          const element = formElements[i];
+          if (
+            element.id !== "name" &&
+            element.name !== "motivaday" &&
+            element.type !== "submit"
+          ) {
+            element.style.display = displayStyle;
+            if (element.type !== "hidden") {
+              element[requiredAction]("required", "true");
+            }
+            const label = document.querySelector(`label[for=${element.id}]`);
+            const labelbus = document.getElementById("labelbus");
+            if (label && labelbus) {
+              label.style.display = displayStyle;
+              labelbus.style.display = displayStyle;
+            }
+          }
+        }
+      }
+
+      async function submitForm(event) {
+        event.preventDefault();
+
+        showLoading();
+        const loading = document.getElementById("loading");
+        loading.style.display = "block";
+
+        const form = document.getElementById("registrationForm");
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const params = new URLSearchParams();
+        formData.forEach((value, key) => {
+          params.append(key, value);
+        });
+
+        try {
+          const response = await fetch(
+            "https://script.google.com/macros/s/AKfycbxiFPQvO-pOPq6U6VrSwiG9Cbk5e7ZG8my1oxRzgcNcSoatHVtiN09XTXzpwYBlcqFQUA/exec",
+            {
+              method: "POST",
+              body: params,
+            }
+          );
+
+          if (response.ok) {
+            hideLoading();
+            Swal.fire({
+              icon: "success",
+              title: "Berhasil",
+              text: "Form berhasil dikirim",
+              willClose: () => {
+                location.reload();
+              },
+            });
+            loading.style.display = "none";
+          } else {
+            hideLoading();
+            Swal.fire({
+              icon: "error",
+              title: "Gagal",
+              text: "Terjadi kesalahan. Coba lagi.",
+            });
+            loading.style.display = "none";
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Gagal",
+            text: "Terjadi kesalahan jaringan. Coba lagi.",
+          });
+          loading.style.display = "none";
+        }
+      }
+    </script>
+  </html>
+</html>
